@@ -8,7 +8,11 @@
 #ifndef HEATHERS_INPUT_LIB_H_
 #define HEATHERS_INPUT_LIB_H_
 
-
+typedef struct{
+	int day;
+	int month;
+	int year;
+}sDate;
 
 #endif /* HEATHERS_INPUT_LIB_H_ */
 

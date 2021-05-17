@@ -9,12 +9,6 @@
 #define HEATHERS_VALUES_INTERPRETATION_H_
 
 
-typedef struct{
-	int day;
-	int month;
-	int year;
-}sDate;
-
 #endif /* HEATHERS_VALUES_INTERPRETATION_H_ */
 
 /**

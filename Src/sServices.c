@@ -83,13 +83,13 @@ int serv_list(sService* list, int length)
     {
     	if( flagFirstLoop && list[i].isEmpty == 0 )
     	{
-    		printf("\n     ID           Description              Salario  \n");
+    		printf("\n     ID           Description              Precio  \n");
     		printf("------------------------------------------------------\n");
     		flagFirstLoop = 0;
     	}
         if ( list[i].isEmpty == 0 )
         {
-            printf("    %05d   |%25s  |%15.2f\n",
+            printf("    %05d   |%15s  |%15.2f\n",
             		list[i].id, list[i].description, list[i].price);
             printf("------------------------------------------------------\n");
             returnAux = 0;

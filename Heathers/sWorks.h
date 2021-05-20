@@ -2,7 +2,7 @@
 #define SWORKS_H_INCLUDED
 
 #include "../Heathers/input_lib.h"
-
+#include "../Heathers/sServices.h"
 #define BRAND_LENGTH 25
 
 typedef struct{

@@ -9,10 +9,10 @@ int main()
 {
 	int returnAux = -1;
 	sWork worksList[MAX_WORKS];
-	sService servicesList[MAX_SERVICES]
+	sService servicesList[MAX_SERVICES];
     if( work_init( worksList, MAX_WORKS ) == 0 && serv_init( servicesList, MAX_SERVICES) == 0 && serv_hardcode(servicesList, MAX_SERVICES) == 0 )
     {
-    	returnAux = main_menu( worksList, MAX_WORKS );
+    	returnAux = main_menu( worksList, MAX_WORKS, servicesList, MAX_SERVICES);
     }
     if( returnAux != 0 )
     {

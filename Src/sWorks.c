@@ -138,13 +138,13 @@ int work_list(sWork* list, int workLength, sService* services, int servicesLengt
     	auxServId = serv_findByID(services, servicesLength, list[i].idService);
     	if( flagFirstLoop && list[i].isEmpty == 0 )
     	{
-    		printf("\n     ID           Marca               Rodado              Servicio          Fecha       \n");
+    		printf("\n     ID              Marca               Rodado         Servicio            Fecha       \n");
     		printf("-------------------------------------------------------------------------------------------\n");
     		flagFirstLoop = 0;
     	}
         if ( list[i].isEmpty == 0 )
         {
-            printf("    %05d   |%25s  |%d  |%25s  |        %02d/%02d/%04d\n",
+            printf("    %05d  |%25s  |%6d  |%15s  |        %02d/%02d/%04d\n",
             		list[i].id, list[i].brand, list[i].wheelSize, services[auxServId].description,
 					list[i].date.day, list[i].date.month, list[i].date.year);
             printf("-------------------------------------------------------------------------------------------\n");

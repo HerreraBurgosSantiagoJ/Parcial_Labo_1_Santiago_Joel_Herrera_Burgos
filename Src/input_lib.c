@@ -7,6 +7,7 @@
 
 #include <stdio_ext.h>
 #include <vallib.h>
+#include <ctype.h>
 #include "../Heathers/input_lib.h"
 
 //Measure Tape===================================================================
@@ -231,6 +232,10 @@ int inp_getCharConcrete( char* character, char* mesage, int trys , int optLength
 		do
 		{
 			returnAux = inp_getChar( character, mesage );
+			if( *character > 'Z' )
+			{
+				*character = toupper(*character);
+			}
 			trys--;
 			if( val_isAmongChars( *character, options, optLength )
 				&& returnAux == 0 )
@@ -346,7 +351,8 @@ int inp_getDate( sDate* date, char* mesage, int trys, int lastYear, char* valueE
 	{
 		do
 		{
-			rigthRead = scanf("%02d/%02d/%04d", date->day, date->month, date->year);
+			printf( "%s" ,mesage );
+			rigthRead = scanf("%02d/%02d/%04d", &date->day, &date->month, &date->year);
 			trys--;
 			if( (date->day < 1 || date->day > 31 ||
 				date->month < 1 || date->month > 12 ||

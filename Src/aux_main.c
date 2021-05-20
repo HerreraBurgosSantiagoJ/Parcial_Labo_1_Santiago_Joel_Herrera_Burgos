@@ -47,6 +47,7 @@ int main_registerWork( sWork* works, int worksLength, sService* services, int se
 			if( inp_getName( auxWork.brand, INP_TXT_BRAND, BRAND_LENGTH,
 							MAX_TRYS, INP_ERROR_NOT_BRAND)== 0 &&
 				inp_getInt(&auxWork.wheelSize, INP_TXT_WHEEL_SIZE, MAX_TRYS, INP_ERROR_NOT_NUMBER ) == 0 &&
+				serv_list(services, servicesLen) == 0 &&
 				inp_getIntRange(&auxWork.idService, INP_TXT_SERVICE_ID, MAX_TRYS, MIN_SERVICES_ID, MAX_SERVICES_ID, INP_ERROR_NOT_EXPECTED_INT, INP_ERROR_NOT_NUMBER)== 0 &&
 				inp_getDate( &auxWork.date, INP_TXT_DATE, MAX_TRYS, 2020, INP_ERROR_NOT_NUMBER, INP_ERROR_NOT_DATE) == 0 )
 			{
@@ -90,6 +91,7 @@ int main_deleteWork( sWork* works, int length, sService* services, int servicesL
 	int returnAux = -1;
 	int options[LEN_INT_YN_OPT] = {0,1};
 	int auxID;
+	int auxService;
 	int auxMax;
 	int keepOn;
 	int position;
@@ -117,17 +119,18 @@ int main_deleteWork( sWork* works, int length, sService* services, int servicesL
 
 			auxMax = work_findGreaterID(works, length);
 
-			if( inp_getIntRange( &auxID, INP_TXT_DEL_ID, trys, 1, auxMax,
+			if( inp_getIntRange( &auxID, INP_TXT_DEL_ID, trys, 0, auxMax,
 								INP_ERROR_NOT_EXPECTED_INT,
 								INP_ERROR_NOT_NUMBER) == 0
 				&& auxID != 0
 				&& (position = work_findById(works, length, auxID)) != -1 )
 			{
+				auxService = serv_findByID(services, servicesLen, works[position].idService);
 				progHeader( TITLE );
 				subHeader( SUB_TITLE_DEL );
 				printf( TXT_WORK_DATA, works[position].id,
 						works[position].brand, works[position].wheelSize,
-						works[position].idService,
+						services[auxService].description,
 						works[position].date.day, works[position].date.month,
 						works[position].date.year );
 				returnAux = inp_getIntConcrete(&allOk, INP_TXT_DATA_OK,
@@ -175,30 +178,33 @@ int main_deleteWork( sWork* works, int length, sService* services, int servicesL
 	}
 	return returnAux;
 }
-/*
+
 void mody_menuShow( void )
 {
 	printf( MENU_MOD_ONE );
 	printf( MENU_MOD_TWO );
 	printf( MENU_MOD_THREE );
 	printf( MENU_MOD_FOUR );
-	printf( MENU_MOD_FIVE );
-	printf( MENU_MOD_SIX );
 }
 
-int mody_menu( Employee* employee, int* keepOn )
+int mody_menu( sWork* work, int* keepOn, sService* services, int servicesLen )
 {
 	int returnAux = -1;
-	int options[LEN_MODY_OPT] = {1, 2, 3, 4, 5, 6};
+	int options[LEN_MODY_OPT] = {1, 2, 3, 4};
 	int option = 0;
-	if( employee != NULL )
+	int auxService;
+	if( work != NULL )
 	{
 		do
 		{
 			progHeader(TITLE);
 			subHeader(SUB_TITLE_MOD);
-			printf( TXT_EMPLOYEE_DATA, employee->id, employee->lastName,
-					employee->name, employee->salary, employee->sector );
+			auxService = serv_findByID(services, servicesLen, work->idService);
+			printf( TXT_WORK_DATA, work->id, work->brand,
+					work->wheelSize,
+					services[auxService].description,
+					work->date.day, work->date.month,
+					work->date.year );
 			mody_menuShow();
 			if( inp_getIntConcrete(&option, INP_TXT_OPTION, MAX_TRYS,
 											LEN_MODY_OPT, options,
@@ -211,42 +217,30 @@ int mody_menu( Employee* employee, int* keepOn )
 			switch ( option )
 			{
 			case 1:
-				returnAux = inp_getName(employee->name, INP_TXT_NAME_NEW,
-										NAME_LENGTH, MAX_TRYS,
-										INP_ERROR_NOT_NAME);
+				returnAux = inp_getName( work->brand, INP_TXT_BRAND, BRAND_LENGTH, MAX_TRYS, INP_ERROR_NOT_BRAND);
 				break;
 			case 2:
-				returnAux = inp_getName(employee->lastName,
-										INP_TXT_LAST_NAME_NEW, NAME_LENGTH,
-										MAX_TRYS, INP_ERROR_NOT_NAME);
+				serv_list(services, servicesLen);
+				returnAux = inp_getIntRange(&work->idService, INP_TXT_SERVICE_ID, MAX_TRYS, MIN_SERVICES_ID, MAX_SERVICES_ID, INP_ERROR_NOT_EXPECTED_INT, INP_ERROR_NOT_NUMBER);
 				break;
 			case 3:
-				returnAux = inp_getFloat(&employee->salary, INP_TXT_SALARY_NEW,
-										MAX_TRYS, INP_ERROR_NOT_NUMBER);
-				break;
-			case 4:
-				returnAux = inp_getInt(&employee->sector, INP_TXT_SECTOR_NEW,
-										MAX_TRYS, INP_ERROR_NOT_NAME);
-				break;
-			case 5:
 				*keepOn = 1;
 				returnAux = 0;
 				break;
-			case 6:
+			case 4:
 				returnAux = 0;
 				break;
 			}
-		}while( returnAux != -2 && option != 5 && option != 6 );
+		}while( returnAux != -2 && option != 3 && option != 4 );
 	}
 	return returnAux;
 }
 
-int main_modifyEmployee( Employee* works, int length )
+int main_modifyWork( sWork* works, int length, sService* services, int servicesLen )
 {
 	int returnAux = -1;
 	int keepOn;
 	int auxMax;
-	int auxMin;
 	int auxID;
 	int position;
 	if( works != NULL && length > 0 )
@@ -257,9 +251,9 @@ int main_modifyEmployee( Employee* works, int length )
 			progHeader( TITLE );
 			subHeader( SUB_TITLE_MOD );
 
-			if( emp_therAreEmployees( works, length ) )
+			if( work_isNotEmpty(works, length) )
 			{
-				printEmployees( works, length );
+				work_list(works, length, services, servicesLen);
 			}
 			else
 			{
@@ -269,15 +263,19 @@ int main_modifyEmployee( Employee* works, int length )
 				break;
 			}
 
-			auxMax = emp_findGreaterID( works, length );
-			auxMin = emp_findMinorID( works, length );
+			auxMax = work_findGreaterID(works, length);
 
-			if( inp_getIntRange( &auxID, INP_TXT_DEL_ID, MAX_TRYS, auxMin,
+			if( inp_getIntRange( &auxID, INP_TXT_DEL_ID, MAX_TRYS, 0,
 								auxMax, INP_ERROR_NOT_EXPECTED_INT,
-								INP_ERROR_NOT_NUMBER) == 0 )
+								INP_ERROR_NOT_NUMBER) == 0 &&
+				auxID != 0)
 			{
-				position = findEmployeeById( works, length, auxID );
-				returnAux = mody_menu( &works[position], &keepOn );
+				position = work_findById(works, length, auxID);
+				returnAux = mody_menu( &works[position], &keepOn, services, servicesLen);
+			}
+			else if( auxID == 0 )
+			{
+				returnAux = 0;
 			}
 			else
 			{
@@ -289,71 +287,35 @@ int main_modifyEmployee( Employee* works, int length )
 	return returnAux;
 }
 
-int main_inform( Employee* works, int length )
+int main_listWorks( sWork* works, int worksLen, sService* services, int servicesLen )
 {
 	int returnAux = -1;
-	int empQuantity = 0;
-	int empQuanHighPay = 0;
-	float salarySum = 0;
-	float salaryAverage;
-	if( works != NULL && length > 0 )
+	if( works != NULL &&
+		services != NULL &&
+		worksLen > 0 &&
+		servicesLen > 0 )
 	{
-		if( sortEmployees(works, length, 1) == 0 )
+		progHeader(TITLE);
+		subHeader(SUB_TITLE_LIST_WORKS);
+		if( work_sort(works, worksLen, 1) == 0 )
 		{
-			printEmployees(works, length);
-			returnAux = 0;
-		}
-
-		for( int i = 0; i < length; i++ )
-		{
-			if( works[i].isEmpty == 0 )
-			{
-				salarySum += works[i].salary;
-				empQuantity++;
-			}
-		}
-
-		salaryAverage = salarySum / empQuantity;
-
-		for( int i = 0; i < length; i++ )
-		{
-			if( works[i].isEmpty == 0 && works[i].salary > salaryAverage )
-			{
-				empQuanHighPay++;
-			}
-		}
-
-		if( returnAux == 0 )
-		{
-			printf( TXT_INFORM, salarySum, salaryAverage, empQuanHighPay );
+			returnAux = work_list(works, worksLen, services, servicesLen);
 		}
 	}
 	return returnAux;
 }
 
-int test_hardcode( Employee* works, int length )
+int main_listServices( sService* services, int servicesLen )
 {
 	int returnAux = -1;
-	char names[10][10] = { "Abigail\0", "Alex\0", "Eugenia\0", "Manuel\0",
-							"Luciana\0", "Rodrigo\0", "Reina\0", "Abraham\0",
-							"Leonora\0", "Francisco\0"};
-	char lastNames[10][10] = {"Martines\0", "Fernandez\0", "Sanchez\0",
-								"Belgrano\0", "Nuñez\0", "Galvan\0", "Paramo\0",
-								"Aranda\0", "Torrente\0", "Flores\0"};
-	float salaries[10] = {676872, 116453, 921130, 80413, 38509, 58301, 559059,
-							822747, 78699, 28814};
-	int sector[10] = { 2, 3, 4, 1, 3, 2, 4, 2, 1, 2 };
-	if( works != NULL && length > 10 )
+	if( services != NULL && servicesLen > 0 )
 	{
-		for( int i = 0; i < 10; i++ )
-		{
-			returnAux = addEmployee( works, length, i+1, names[i], lastNames[i],
-									salaries[i], sector[i] );
-		}
-		returnAux = 0;
+		progHeader(TITLE);
+		subHeader(SUB_TITLE_LIST_SERV);
+		returnAux = serv_list(services, servicesLen);
 	}
 	return returnAux;
-}*/
+}
 
 void main_menuShow( void )
 {
@@ -399,7 +361,7 @@ int main_menu( sWork* works, int worksLength, sService* services, int servLength
 			case 'B':
 				if( work_isNotEmpty(works, worksLength) == 1 )
 				{
-					returnAux = main_modifyEmployee( works, worksLength );
+					returnAux = main_modifyWork(works, worksLength, services, servLength);
 				}
 				else
 				{
@@ -410,7 +372,7 @@ int main_menu( sWork* works, int worksLength, sService* services, int servLength
 			case 'C':
 				if( work_isNotEmpty(works, worksLength) == 1 )
 				{
-					returnAux = main_deleteEmployee( works, worksLength );
+					returnAux = main_deleteWork(works, worksLength, services, servLength);
 				}
 				else
 				{
@@ -421,7 +383,7 @@ int main_menu( sWork* works, int worksLength, sService* services, int servLength
 			case 'D':
 				if( work_isNotEmpty(works, worksLength) == 1 )
 				{
-					returnAux = main_inform( works, worksLength );
+					returnAux = main_listWorks(works, worksLength, services, servLength);
 					sys_pause();
 				}
 				else
@@ -431,14 +393,15 @@ int main_menu( sWork* works, int worksLength, sService* services, int servLength
 				}
 				break;
 			case 'E':
-				returnAux = test_hardcode( works, worksLength );
+				returnAux = main_listServices(services, servLength);
+				sys_pause();
 				break;
 			case 'G':
 				printf( GOODBYE );
 				returnAux = 0;
 				break;
 			}
-		}while( option != 6 && returnAux == 0 );
+		}while( option != 'G' && returnAux == 0 );
 	}
 	return returnAux;
 }

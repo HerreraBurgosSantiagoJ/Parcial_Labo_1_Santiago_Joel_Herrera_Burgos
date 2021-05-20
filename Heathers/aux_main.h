@@ -44,7 +44,7 @@
 #define TXT_NEW_ID "\nEl ID del nuevo trabajo es %d."
 #define TXT_WORK_DATA "\nID: %05d\nMarca: %s\nRodado: %d\nServicio: %s\nFecha: %02d/%02d/%04d"
 #define TXT_REMOVAL_SUCCESES "\nEl trabajo fue dado de BAJA con exito."
-#define GOODBYE "\nHasta Luego! :D"
+#define GOODBYE "\nHasta Luego! :D\n"
 
 //Output Errors
 #define MAIN_ERROR_MALFUNCTION_EXIT "\nEl programa parece estar funcionando mal, este se cerrará."
@@ -63,7 +63,7 @@
 #define INP_TXT_BRAND "\nIngrese la marca de la bicicleta: "
 #define INP_TXT_WHEEL_SIZE "\nIngrese el rodado: "
 #define INP_TXT_SERVICE_ID "\nIngrese el ID de servicio: "
-#define INP_TXT_DATE "\nIngrese la fecha: "
+#define INP_TXT_DATE "\nIngrese la fecha (Formato dd/mm/aaaa apartir del 2020): "
 
 //Input errors
 #define INP_ERROR_MAIN_OPTION "\nError! Lo ingresado no corresponde con ninguna de las opciones del menu principal.\nIntentos Restantes: %d"
